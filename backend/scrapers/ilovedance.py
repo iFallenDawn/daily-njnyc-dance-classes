@@ -5,7 +5,7 @@ from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
-from models.models import DanceClass
+from ..models.models import DanceClass
 
 '''
 Example of html
@@ -26,18 +26,14 @@ Example of html
 </div>
 '''
 
-def get_ilovedancenj_classes(url: str) -> list[DanceClass]:
+def scrape_ilovedance_classes(dance_class_data: list[DanceClass], url: str, location: str) -> list[DanceClass]:
     driver = create_firefox_driver()
     driver.get(url)
-    wait = WebDriverWait(driver, timeout=10)
-    # time.sleep(3)
+    wait = WebDriverWait(driver, timeout=5)
     date = f'{datetime.today().strftime('%Y-%m-%d')}'
-    wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'div[data-start_date]')))
-    time.sleep(3)
+    wait.until(EC.visibility_of_element_located((By.CLASS_NAME, 'bw-widget__footer')))
     html = driver.page_source
     soup = BeautifulSoup(html, 'html.parser')
-    
-    dance_class_data = []
     week_div = soup.find(attrs={'data-start_date': date})
     if week_div:
         days_divs = week_div.find_all('div', class_='bw-widget__day')
@@ -55,10 +51,11 @@ def get_ilovedancenj_classes(url: str) -> list[DanceClass]:
                     class_date = date.split('-', 1)[1]
                     class_date = datetime.strptime(class_date, '%Y-%m-%d')
             for session_div in session_divs:
+                studio = f'ILoveDance {location}' 
                 class_data = {
                     'title': '',
                     'instructor': '',
-                    'studio': 'ILoveDance',  
+                    'studio': studio,
                     'style': '',  
                     'date': class_date,
                     'start_time': class_date,
@@ -97,10 +94,14 @@ def create_firefox_driver():
     options.add_argument('--headless')
     return webdriver.Firefox(options=options)
 
-def main():
-    print("Hello from daily-nynyc-dance-classes!")
-    get_ilovedancenj_classes("https://www.ilovedancenyc.com/instudio-classesnewjersey")
 
 
-if __name__ == "__main__":
-    main()
+def get_ilovedance_classes():
+    dance_class_data = []
+    nj_url = 'https://www.ilovedancenyc.com/instudio-classesnewjersey'
+    manhattan_url = 'https://www.ilovedancenyc.com/instudio-classesmanhattan'
+    queens_url = 'https://www.ilovedancenyc.com/instudio-classesqueens'
+    scrape_ilovedance_classes(dance_class_data, nj_url, 'New Jersey')
+    scrape_ilovedance_classes(dance_class_data, manhattan_url, 'Manhattan')
+    scrape_ilovedance_classes(dance_class_data, queens_url, 'Queens')
+    return dance_class_data
