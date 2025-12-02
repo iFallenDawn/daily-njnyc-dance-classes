@@ -1,11 +1,11 @@
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from bs4 import BeautifulSoup
-from .driver import create_firefox_driver
+from .driver import create_chrome_driver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
-from ..models.models import DanceClass
+from models.models import DanceClass
 
 '''
 Example of html
@@ -28,7 +28,7 @@ Example of html
 
 def scrape_ilovedance_classes(url: str, location: str) -> list[DanceClass]:
     dance_class_data = []
-    driver = create_firefox_driver()
+    driver = create_chrome_driver()
     try: 
         driver.get(url)
         wait = WebDriverWait(driver, timeout=5)
