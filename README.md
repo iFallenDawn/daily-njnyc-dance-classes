@@ -80,3 +80,10 @@ for each bw-widget__day:
 sutrapro
 make api call to [this](https://sutrapro.com/api/widget/data?widgetName=modega&type=classes&start_time=1764478800)
 
+## how to run
+be in root, have docker installed
+```bash
+make up
+make rebuild-no-cache service=backend -> only if you make changes to the docker file
+docker logs -f backend
+```
