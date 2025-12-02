@@ -1,7 +1,7 @@
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from bs4 import BeautifulSoup
-from selenium import webdriver
+from .driver import create_firefox_driver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -91,11 +91,6 @@ def scrape_ilovedance_classes(url: str, location: str) -> list[DanceClass]:
     finally:
         driver.quit()
     return dance_class_data
-
-def create_firefox_driver():
-    options = webdriver.FirefoxOptions()
-    options.add_argument('--headless')
-    return webdriver.Firefox(options=options)
 
 def get_ilovedance_classes() -> list[DanceClass]:
     all_dance_class_data = []
