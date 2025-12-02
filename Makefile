@@ -28,22 +28,22 @@ up:
 	
 down:
 	@echo -e "\033[33m⏹️  [INFO]\033[0m Stopping App..."
-	@cd docker && docker compose down
+	@cd docker && docker compose --env-file env/static.env --env-file env/user.env down
 	@echo -e "\033[31m🛑 [INFO]\033[0m App stopped."
 
 restart-all:
 	@echo -e "\033[34m🔄 [INFO]\033[0m Restarting all containers..."
-	@cd docker && docker compose restart
+	@cd docker && docker compose --env-file env/static.env --env-file env/user.env restart
 	@echo -e "\033[34m✅ [INFO]\033[0m All containers restarted."
 
 restart-frontend:
 	@echo -e "\033[34m🔄 [INFO]\033[0m Restarting frontend container..."
-	@cd docker && docker compose restart frontend
+	@cd docker && docker compose --env-file env/static.env --env-file env/user.env restart frontend
 	@echo -e "\033[34m✅ [INFO]\033[0m Frontend container restarted."
 
 restart-backend:
 	@echo -e "\033[34m🔄 [INFO]\033[0m Restarting backend container..."
-	@cd docker && docker compose restart backend
+	@cd docker && docker compose --env-file env/static.env --env-file env/user.env restart backend
 	@echo -e "\033[34m✅ [INFO]\033[0m Backend container restarted."
 
 # Generic rebuild with container parameter
@@ -54,7 +54,7 @@ rebuild:
 			exit 1; \
 	fi
 	@echo -e "\033[34m🔨 [INFO]\033[0m Rebuilding $(service) container...\033[0m"
-	@cd docker && docker compose build $(service)
+	@cd docker && docker compose --env-file env/static.env --env-file env/user.env build $(service)
 
 # Generic rebuild with no cache and container parameter
 rebuild-no-cache:
@@ -64,7 +64,7 @@ rebuild-no-cache:
 			exit 1; \
 	fi
 	@echo -e "\033[35m🔄 [INFO]\033[0m Rebuilding $(service) container (no cache)...\033[0m"
-	@cd docker && docker compose build --no-cache $(service)
+	@cd docker && docker compose --env-file env/static.env --env-file env/user.env build --no-cache $(service)
 	
 ## local development
 frontend:
