@@ -1,11 +1,11 @@
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from bs4 import BeautifulSoup
-from .driver import create_firefox_driver
+from scrapers.driver import create_firefox_driver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
-from ..models.models import DanceClass
+from models.models import DanceClass
 
 '''
 Example of html
