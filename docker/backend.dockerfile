@@ -3,22 +3,16 @@ FROM selenium/standalone-all-browsers:nightly
 
 WORKDIR /app
 
-# Install python
-# RUN apt-get update && \
-#     apt-get install -y python3 python3-pip && \
-#     rm -rf /var/lib/apt/lists/*
-
-# Install uv
-# RUN pip install --no-cache-dir uv
-
-# Copy pyproject.toml and related files for dependency installation
-# COPY backend/pyproject.toml .
-
-# Install dependencies using uv
-# RUN uv sync
 # Copy application source
 COPY backend/ .
 
+# Install uv
+RUN pip install --no-cache-dir uv
+
+# copy uv files to requirements.txt
+RUN uv pip compile pyproject.toml --output-file requirements.txt
+
+# install dependencies
 RUN pip install -r requirements.txt
 
 # Expose port
