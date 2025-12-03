@@ -62,7 +62,8 @@ def scrape_ilovedance_classes(url: str, location: str) -> list[DanceClass]:
                         'date': class_date,
                         'start_time': class_date,
                         'end_time': class_date,
-                        'difficulty': '' 
+                        'difficulty': '',
+                        'cancelled' : False
                     }  
                         
                     start_time_element = session_div.find('time', class_='hc_starttime')
@@ -88,6 +89,8 @@ def scrape_ilovedance_classes(url: str, location: str) -> list[DanceClass]:
                         
                     dance_class = DanceClass(**class_data)
                     dance_class_data.append(dance_class)
+    except Exception as e:
+        print(e)
     finally:
         driver.quit()
     return dance_class_data
