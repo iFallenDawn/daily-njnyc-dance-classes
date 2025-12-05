@@ -85,7 +85,17 @@ docker logs -f backend
 [link to scrape](https://clients.mindbodyonline.com/classic/ws?studioid=28329&stype=-103&sView=week&sLoc=0)
 
 ```html
-<div class="view-content">
-    ...
-</div>
+<div id='classSchedule-mainTable'>
+    <div class="header" id="an5"><b><span class="headText">Thu </span>December 4, 2025</b></div> - > scan for this current day
+    keep going to the end of the table
+    <div class='evenRow'>
+        <div class='col-1'> -> getText for time, 9:00 am EST
+        <div class='col-2'>
+            <div class='col'> -> getText for class title
+            <div class='col'> -> getText for instructor
+            <div class='col'> -> getText for room
+            <div class='col'> -> getText for class duration
+    <div class='oddRow'>
+        ...same structure as even row
+    skip class='header'
 ```

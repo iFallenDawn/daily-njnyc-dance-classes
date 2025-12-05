@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from bs4 import BeautifulSoup, Tag
-from .driver import create_chrome_driver
+from .utility import create_chrome_driver, parse_date
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -20,21 +20,8 @@ from models.models import DanceClass
 <button type="button" class="m-auto primaryColor btn btn-link">Show More</button> -> paginates 10 at a time. probably click this 5 times
 '''
 
-def parse_date(date: str) -> datetime:
-    date_without_year = datetime.strptime(date, "%A, %b %d")
-    current_date = datetime.now()
-    new_date = date_without_year.replace(year=current_date.year)
-    
-    days_diff = (new_date - current_date).days
-    
-    # If date is more than X days in the past, it's probably next year
-    if days_diff < -60:  # More than 60 days in the past
-        new_date = new_date.replace(year=current_date.year + 1)
-    
-    return new_date
-
-def get_start_end_time(class_date: datetime, modega_time: str):
-    # modega formats time in this 05:00 PM EST • (85 min) 
+def get_start_end_time(class_date: datetime, modega_time: str) -> tuple[datetime, datetime]:
+    # modega formats time in this '05:00 PM EST • (85 min)'
     storage = modega_time.split(' EST • ')
     length = storage[1]
     length = length.split(' ')[0].replace('(', '')
