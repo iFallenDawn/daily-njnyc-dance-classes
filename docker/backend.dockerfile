@@ -1,19 +1,19 @@
 # syntax=docker/dockerfile:1
-FROM python:latest
+FROM selenium/standalone-all-browsers:nightly
 
 WORKDIR /app
+
+# Copy application source
+COPY backend/ .
 
 # Install uv
 RUN pip install --no-cache-dir uv
 
-# Copy pyproject.toml and related files for dependency installation
-COPY backend/pyproject.toml .
+# copy uv files to requirements.txt
+RUN uv pip compile pyproject.toml --output-file requirements.txt
 
-# Install dependencies using uv
-RUN uv pip install --system -e .
-
-# Copy application source
-COPY backend/ .
+# install dependencies
+RUN pip install -r requirements.txt
 
 # Expose port
 EXPOSE 8000

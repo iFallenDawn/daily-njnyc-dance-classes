@@ -12,4 +12,5 @@ class DanceClass(BaseModel):
     start_time: datetime 
     end_time: datetime 
     difficulty: str
+    cancelled: bool
     

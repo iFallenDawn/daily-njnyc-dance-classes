@@ -10,5 +10,4 @@ dependencies = [
     "fastapi[standard]>=0.123.0",
     "requests>=2.32.5",
     "selenium>=4.38.0",
-    "webdriver-manager>=4.0.2",
 ]

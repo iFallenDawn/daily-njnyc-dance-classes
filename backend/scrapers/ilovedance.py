@@ -1,7 +1,7 @@
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from bs4 import BeautifulSoup
-from scrapers.driver import create_firefox_driver
+from .driver import create_chrome_driver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -28,7 +28,7 @@ Example of html
 
 def scrape_ilovedance_classes(url: str, location: str) -> list[DanceClass]:
     dance_class_data = []
-    driver = create_firefox_driver()
+    driver = create_chrome_driver()
     try: 
         driver.get(url)
         wait = WebDriverWait(driver, timeout=5)
@@ -62,7 +62,8 @@ def scrape_ilovedance_classes(url: str, location: str) -> list[DanceClass]:
                         'date': class_date,
                         'start_time': class_date,
                         'end_time': class_date,
-                        'difficulty': '' 
+                        'difficulty': '',
+                        'cancelled' : False
                     }  
                         
                     start_time_element = session_div.find('time', class_='hc_starttime')
@@ -88,6 +89,8 @@ def scrape_ilovedance_classes(url: str, location: str) -> list[DanceClass]:
                         
                     dance_class = DanceClass(**class_data)
                     dance_class_data.append(dance_class)
+    except Exception as e:
+        print(e)
     finally:
         driver.quit()
     return dance_class_data
