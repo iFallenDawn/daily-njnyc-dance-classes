@@ -3,6 +3,9 @@ FROM selenium/standalone-all-browsers:nightly
 
 WORKDIR /app
 
+# set timezone to est
+ENV TZ=America/New_York
+
 # Copy application source
 COPY backend/ .
 

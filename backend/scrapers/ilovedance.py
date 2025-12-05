@@ -32,7 +32,7 @@ def scrape_ilovedance_classes(url: str, location: str) -> list[DanceClass]:
     try: 
         driver.get(url)
         wait = WebDriverWait(driver, timeout=5)
-        date = f'{datetime.today().strftime('%Y-%m-%d')}'
+        date = f'{datetime.now().strftime('%Y-%m-%d')}'
         wait.until(EC.visibility_of_element_located((By.CLASS_NAME, 'bw-widget__footer')))
         html = driver.page_source
         soup = BeautifulSoup(html, 'html.parser')
