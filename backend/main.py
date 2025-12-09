@@ -3,23 +3,102 @@ from typing import Annotated
 from scrapers import ilovedance, modega
 from models.models import DanceClass
 from data import danceclasses
+from datetime import datetime
 import asyncio
 
 app = FastAPI()
 
 @app.get("/")
 async def get_all_classes(
-    studio: Annotated[
+    title: Annotated[
         str | None,
         Query(
-            title="Name of studio",
-            description='modega, ilovedance, ilovedance manhattan, ilovedance queens, ilovedance new jersey'
+            title="Name of class",
         )                
-    ] = None
+    ] = None,
+    instructor: Annotated[
+        str | None,
+        Query(
+            title="Instructor of class",
+        )                
+    ] = None,
+    studios: Annotated[
+        list[str] | None,
+        Query(
+            title="Name of studio(s)",
+            description='Can have multiple: modega, ilovedance, ilovedance manhattan, ilovedance queens, ilovedance new jersey'
+        )                
+    ] = None,
+    style: Annotated[
+        str | None,
+        Query(
+            title="Style of class",
+            description='Not implemented yet',
+            deprecated=True
+        )                
+    ] = None,
+    date: Annotated[
+        datetime | None,
+        Query(
+            title="Date of class"
+        )                
+    ] = None,
+    start_time: Annotated[
+        datetime | None,
+        Query(
+            title="Start time of class"
+        )                
+    ] = None,
+    end_time: Annotated[
+        datetime | None,
+        Query(
+            title="End time of class"
+        )                
+    ] = None,
+    difficulty: Annotated[
+        str | None,
+        Query(
+            title="Difficulty of class",
+            description='Not implemented yet',
+            deprecated=True
+        )                
+    ] = None,
+    cancelled: Annotated[
+        bool | None,
+        Query(
+            title="Whether or not class is cancelled"
+        )                
+    ] = None,
+    page: Annotated[
+        int,
+        Query(
+            ge=1,
+            title="Page number",
+            description="Page number for pagination, starts at 1"
+        )
+    ] = 1,
+    limit: Annotated[
+        int,
+        Query(
+            le=50,
+            title="Number of results",
+            description="Limit the number of results, max is 50"
+        )
+    ] = 10
 ):
-    if studio:
-        return await danceclasses.get_dance_classes_by_studio(studio)
-    dance_class_data = await danceclasses.get_all_dance_classes()
+    dance_class_data = await danceclasses.get_all_dance_classes(
+        title,
+        instructor,
+        studios,
+        style,
+        date,
+        start_time,
+        end_time,
+        difficulty,
+        cancelled,
+        page,
+        limit
+    )
     return dance_class_data
 
 @app.get('/scrape')
