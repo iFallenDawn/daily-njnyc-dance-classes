@@ -1,0 +1,38 @@
+name: Studio Scrapers
+
+on:
+  schedule:
+    - cron: 0 * * * *
+jobs:
+  webscraper:
+    timeout-minutes: 360
+    runs-on: ubuntu-latest
+    env:
+      TZ: America/New_York
+
+    steps:
+      - uses: actions/checkout@v6
+      - uses: browser-actions/setup-chrome@v2
+        with:
+          chrome-version: stable
+          install-chromedriver: true
+          install-dependencies: true
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - name: Install required libraries
+        if: success()
+        run: |
+          cd backend/
+          pip install uv
+          uv sync
+      - name: Update classes in table
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        if: success()
+        run: |
+          date
+          cp -r backend/. .
+          source .venv/bin/activate
+          python -m scrapers.scrape_all
