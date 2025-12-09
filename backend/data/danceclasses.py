@@ -54,11 +54,11 @@ async def get_all_dance_classes(
     if cancelled:
         query = query.eq('cancelled', cancelled)
     
-    query.order('start_time')
-    
-    pagination_start = (page - 1) + limit
+    pagination_start = (page - 1) * limit
     pagination_end = pagination_start + limit - 1
     query = query.range(pagination_start, pagination_end)
+
+    query.order('start_time')
     
     response = query.execute()
     return response.data
