@@ -24,23 +24,15 @@ async def get_all_dance_classes(
     if instructor: 
         query = query.ilike('instructor', f'%{instructor}%')
     if studios:
-        if len(studios) == 1:
-            studio_name = studios[0].lower()
+        queried_studios = []
+        for studio in studios:
+            studio_name = studio.lower()
             if studio_name == 'ilovedance':
-                query = query.ilike('studio', '%ilovedance%')
+                queried_studios.append(f'studio.ilike.%ilovedance%')
             else:
-                query = query.ilike('studio', f'%{studios[0]}%')
-        else:
-            queried_studios = []
-            for studio in studios:
-                studio_name = studio.lower()
-                if studio_name == 'ilovedance':
-                    query = query.or_(f'studio.ilike.%ilovedance%')
-                else:
-                    queried_studios.append(f'studio.ilike.%{studio_name}%')
-            if queried_studios:
-                all_ors = ','.join(queried_studios)
-                query = query.or_(all_ors)
+                queried_studios.append(f'studio.ilike.%{studio_name}%')
+        if queried_studios:
+            query = query.or_(','.join(queried_studios))
     if style:
         query = query.ilike('style', f'%{style}%')
     if date:
