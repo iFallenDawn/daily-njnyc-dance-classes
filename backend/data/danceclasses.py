@@ -29,7 +29,7 @@ async def get_all_dance_classes(
             if studio_name == 'ilovedance':
                 query = query.ilike('studio', '%ilovedance%')
             else:
-                query = query.ilike('studio', f'%{studios}%')
+                query = query.ilike('studio', f'%{studios[0]}%')
         else:
             queried_studios = []
             for studio in studios:
