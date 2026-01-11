@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import type { ColumnDef } from "@tanstack/react-table"
-import type { DanceClass } from "@/api/index"
+import type { ColumnDef } from "@tanstack/react-table";
+import type { DanceClass } from "@/api/index";
 
 export const columns: ColumnDef<DanceClass>[] = [
   {
@@ -9,16 +9,12 @@ export const columns: ColumnDef<DanceClass>[] = [
     header: "Class",
   },
   {
-    accessorKey: "instructor",
-    header: "Instructor",
-  },
-  {
     accessorKey: "studio",
     header: "Studio",
   },
   {
-    accessorKey: "style",
-    header: "Style",
+    accessorKey: "instructor",
+    header: "Instructor",
   },
   {
     accessorKey: "date",
@@ -33,7 +29,11 @@ export const columns: ColumnDef<DanceClass>[] = [
     header: "End Time",
   },
   {
+    accessorKey: "style",
+    header: "Style",
+  },
+  {
     accessorKey: "difficulty",
     header: "Difficulty",
   },
-]
+];
