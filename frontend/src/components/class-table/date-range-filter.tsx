@@ -9,6 +9,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
+import type { DateRange } from "react-day-picker";
 
 interface DateRangeFilterProps {
   startDate: Date | undefined;
@@ -25,19 +26,18 @@ export function DateRangeFilter({
   onDateRangeChange,
 }: DateRangeFilterProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [tempStartDate, setTempStartDate] = useState<Date | undefined>(
-    startDate
-  );
-  const [tempEndDate, setTempEndDate] = useState<Date | undefined>(endDate);
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
+    from: startDate,
+    to: endDate,
+  });
 
   const handleClear = () => {
-    setTempStartDate(undefined);
-    setTempEndDate(undefined);
+    setDateRange(undefined);
     onDateRangeChange(undefined, undefined);
   };
 
   const handleApply = () => {
-    onDateRangeChange(tempStartDate, tempEndDate);
+    onDateRangeChange(dateRange?.from, dateRange?.to);
     setIsOpen(false);
   };
 
@@ -64,36 +64,13 @@ export function DateRangeFilter({
             <h4 className="font-semibold text-sm">Select Date Range</h4>
           </div>
 
-          <div className="space-y-2">
-            <div>
-              <label className="text-xs text-muted-foreground mb-1 block">
-                Start Date
-              </label>
-              <Calendar
-                mode="single"
-                selected={tempStartDate}
-                onSelect={setTempStartDate}
-                initialFocus
-                disabled={(date) => (tempEndDate ? date > tempEndDate : false)}
-              />
-            </div>
-
-            <Separator />
-
-            <div>
-              <label className="text-xs text-muted-foreground mb-1 block">
-                End Date
-              </label>
-              <Calendar
-                mode="single"
-                selected={tempEndDate}
-                onSelect={setTempEndDate}
-                disabled={(date) =>
-                  tempStartDate ? date < tempStartDate : false
-                }
-              />
-            </div>
-          </div>
+          <Calendar
+            mode="range"
+            selected={dateRange}
+            onSelect={setDateRange}
+            initialFocus
+            numberOfMonths={2}
+          />
 
           <Separator />
 

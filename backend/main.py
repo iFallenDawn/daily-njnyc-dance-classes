@@ -29,10 +29,11 @@ async def get_all_classes(
             title="Name of class",
         )                
     ] = None,
-    instructor: Annotated[
-        str | None,
+    instructors: Annotated[
+        list[str] | None,
         Query(
-            title="Instructor of class",
+            title="Instructor(s) of class",
+            description='Can have multiple instructors'
         )                
     ] = None,
     studios: Annotated[
@@ -101,7 +102,7 @@ async def get_all_classes(
 ):
     dance_class_data = await danceclasses.get_all_dance_classes(
         title,
-        instructor,
+        instructors,
         studios,
         style,
         date,

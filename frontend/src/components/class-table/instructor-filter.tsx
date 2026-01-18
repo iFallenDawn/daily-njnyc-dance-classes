@@ -102,18 +102,16 @@ export function InstructorFilter({
               filteredInstructors.map((instructor) => (
                 <div
                   key={instructor}
-                  className="flex items-center space-x-2 hover:bg-accent p-2 rounded-sm cursor-pointer"
-                  onClick={() => handleToggleInstructor(instructor)}
+                  className="flex items-center space-x-2 p-2 rounded-sm"
                 >
                   <Checkbox
                     id={`instructor-${instructor}`}
                     checked={selectedInstructors.has(instructor)}
                     onCheckedChange={() => handleToggleInstructor(instructor)}
-                    onClick={(e) => e.stopPropagation()}
                   />
                   <label
                     htmlFor={`instructor-${instructor}`}
-                    className="text-sm cursor-pointer flex-1"
+                    className="text-sm flex-1"
                   >
                     {instructor}
                   </label>

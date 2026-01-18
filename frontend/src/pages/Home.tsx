@@ -8,14 +8,18 @@ import { columns } from "../components/class-table/columns";
 import { DataTable } from "../components/class-table/data-table";
 
 // api
-import { get_all_classes, type DanceClass } from "@/api/index";
+import {
+  get_all_classes,
+  get_all_instructors,
+  type DanceClass,
+} from "@/api/index";
 
 // utils
 import { formatDate, formatTime } from "@/lib/formatting";
-import { parse } from "date-fns";
+import { format } from "date-fns";
 
 // custom components
-// import { ModeToggle } from "@/components/mode-toggle";
+import { Pagination } from "@/components/class-table/pagination";
 import SearchBar, {
   type FilterState,
 } from "@/components/class-table/search-bar";
@@ -25,23 +29,19 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Extract unique studios and instructors from data
-  const studios = useMemo(() => {
-    const uniqueStudios = Array.from(new Set(data.map((d) => d.studio)));
-    return uniqueStudios.sort();
-  }, [data]);
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
-  const instructors = useMemo(() => {
-    const uniqueInstructors = Array.from(
-      new Set(data.map((d) => d.instructor))
-    );
-    return uniqueInstructors.sort();
-  }, [data]);
-
-  // Initialize filters with all studios and instructors selected
+  // Filter state
   const [filters, setFilters] = useState<FilterState>({
     title: "",
-    studios: new Set<string>(),
+    studios: new Set<string>([
+      "Modega",
+      "ILoveDance Manhattan",
+      "ILoveDance Queens",
+      "ILoveDance New Jersey",
+    ]),
     instructors: new Set<string>(),
     startDate: undefined,
     endDate: undefined,
@@ -49,26 +49,37 @@ export default function Home() {
     endTime: undefined,
   });
 
-  // Update filters when data changes to select all studios and instructors
-  useEffect(() => {
-    if (studios.length > 0 && filters.studios.size === 0) {
-      setFilters((prev) => ({
-        ...prev,
-        studios: new Set(studios),
-      }));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [studios]);
+  // Known studios list - hardcoded since these are the only studios we scrape
+  const availableStudios = useMemo(
+    () => [
+      "Modega",
+      "ILoveDance Manhattan",
+      "ILoveDance Queens",
+      "ILoveDance New Jersey",
+    ],
+    []
+  );
 
+  // Available instructors list - fetched once on mount
+  const [availableInstructors, setAvailableInstructors] = useState<string[]>(
+    []
+  );
+
+  // Fetch all instructors on mount
   useEffect(() => {
-    if (instructors.length > 0 && filters.instructors.size === 0) {
-      setFilters((prev) => ({
-        ...prev,
-        instructors: new Set(instructors),
-      }));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [instructors]);
+    const fetchInstructors = async () => {
+      const instructors = await get_all_instructors();
+      setAvailableInstructors(instructors);
+      // Auto-select all instructors on first load
+      if (instructors.length > 0) {
+        setFilters((prev) => ({
+          ...prev,
+          instructors: new Set(instructors),
+        }));
+      }
+    };
+    fetchInstructors();
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -77,20 +88,50 @@ export default function Home() {
       try {
         setLoading(true);
         setError(null);
-        const classes = await get_all_classes({
-          page: 1,
-          limit: 50,
+
+        // If studios or instructors are completely empty, don't fetch - return empty results
+        if (filters.studios.size === 0 || filters.instructors.size === 0) {
+          if (isMounted) {
+            setData([]);
+            setTotalPages(1);
+            setLoading(false);
+          }
+          return;
+        }
+
+        // Build request with filter parameters
+        const response = await get_all_classes({
+          page: currentPage,
+          limit: 10,
+          title: filters.title || null,
+          instructors:
+            filters.instructors.size > 0
+              ? Array.from(filters.instructors)
+              : null,
+          studios:
+            filters.studios.size > 0 ? Array.from(filters.studios) : null,
+          style: null,
+          date: null,
+          start_time: filters.startDate
+            ? format(filters.startDate, "yyyy-MM-dd'T'00:00:00")
+            : null,
+          end_time: filters.endDate
+            ? format(filters.endDate, "yyyy-MM-dd'T'23:59:59")
+            : null,
+          difficulty: null,
+          cancelled: null,
         });
 
         // format class dates and times
-        classes.forEach((danceClass) => {
+        response.data.forEach((danceClass) => {
           danceClass.date = formatDate(danceClass.start_time);
           danceClass.start_time = formatTime(danceClass.start_time);
           danceClass.end_time = formatTime(danceClass.end_time);
         });
 
         if (isMounted) {
-          setData(classes);
+          setData(response.data);
+          setTotalPages(response.total_pages);
         }
       } catch (err) {
         if (isMounted) {
@@ -110,50 +151,16 @@ export default function Home() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [currentPage, filters]);
 
-  // Apply all filters
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filters]);
+
+  // Apply client-side filtering for time range only
   const filteredData = useMemo(() => {
     return data.filter((danceClass) => {
-      // Title filter
-      if (
-        filters.title &&
-        !danceClass.title.toLowerCase().includes(filters.title.toLowerCase())
-      ) {
-        return false;
-      }
-
-      // Studio filter - if no studios selected, show no results
-      if (studios.length > 0 && !filters.studios.has(danceClass.studio)) {
-        return false;
-      }
-
-      // Instructor filter - if no instructors selected, show no results
-      if (
-        instructors.length > 0 &&
-        !filters.instructors.has(danceClass.instructor)
-      ) {
-        return false;
-      }
-
-      // Date range filter
-      if (filters.startDate || filters.endDate) {
-        try {
-          const classDate = parse(danceClass.date, "MMM dd, yyyy", new Date());
-
-          if (filters.startDate && classDate < filters.startDate) {
-            return false;
-          }
-
-          if (filters.endDate && classDate > filters.endDate) {
-            return false;
-          }
-        } catch {
-          // If date parsing fails, exclude the class
-          return false;
-        }
-      }
-
       // Time range filter - check if class time overlaps with selected range
       if (filters.startTime || filters.endTime) {
         try {
@@ -161,7 +168,6 @@ export default function Home() {
           const classEnd24 = convertTo24Hour(danceClass.end_time);
 
           // Check if class overlaps with the filter range
-          // Class should start before or at filter end time, and end after or at filter start time
           if (filters.startTime && classEnd24 < filters.startTime) {
             return false;
           }
@@ -170,7 +176,6 @@ export default function Home() {
             return false;
           }
         } catch {
-          // If time parsing fails, exclude the class
           return false;
         }
       }
@@ -196,26 +201,36 @@ export default function Home() {
     return `${hours.padStart(2, "0")}:${minutes}`;
   };
 
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
   return (
-    <div className="flex flex-col w-6xl mx-auto my-8">
+    <div className="flex flex-col h-screen w-6xl mx-auto py-8">
       {/* <ModeToggle /> */}
-      <div className="flex flex-col">
+      <div className="flex flex-col mb-4">
         <div className="text-2xl font-semibold">Dance Class Schedule</div>
         <div className="text-muted-foreground">
           Browse and filter dance classes
         </div>
       </div>
       <SearchBar
-        studios={studios}
-        instructors={instructors}
+        studios={availableStudios}
+        instructors={availableInstructors}
         filters={filters}
         onFiltersChange={setFilters}
       />
       {error && <div className="text-red-500 mb-4">Error: {error}</div>}
-      {loading ? (
-        <div className="text-center py-8">Loading classes...</div>
-      ) : (
-        <DataTable columns={columns} data={filteredData} />
+      <div className="flex-1 overflow-auto min-h-0">
+        <DataTable columns={columns} data={filteredData} loading={loading} />
+      </div>
+      {totalPages > 0 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+          disabled={loading}
+        />
       )}
     </div>
   );

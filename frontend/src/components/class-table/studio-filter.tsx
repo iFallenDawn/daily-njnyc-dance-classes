@@ -102,18 +102,16 @@ export function StudioFilter({
               filteredStudios.map((studio) => (
                 <div
                   key={studio}
-                  className="flex items-center space-x-2 hover:bg-accent p-2 rounded-sm cursor-pointer"
-                  onClick={() => handleToggleStudio(studio)}
+                  className="flex items-center space-x-2 p-2 rounded-sm"
                 >
                   <Checkbox
                     id={`studio-${studio}`}
                     checked={selectedStudios.has(studio)}
                     onCheckedChange={() => handleToggleStudio(studio)}
-                    onClick={(e) => e.stopPropagation()}
                   />
                   <label
                     htmlFor={`studio-${studio}`}
-                    className="text-sm cursor-pointer flex-1"
+                    className="text-sm flex-1"
                   >
                     {studio}
                   </label>
