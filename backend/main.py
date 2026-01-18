@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Query
+from fastapi.middleware.cors import CORSMiddleware
 from typing import Annotated
 from scrapers import ilovedance, modega
 from models.models import DanceClass
@@ -8,6 +9,18 @@ import asyncio
 
 app = FastAPI()
 
+origins = [
+    "*",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 @app.get("/")
 async def get_all_classes(
     title: Annotated[
@@ -16,10 +29,11 @@ async def get_all_classes(
             title="Name of class",
         )                
     ] = None,
-    instructor: Annotated[
-        str | None,
+    instructors: Annotated[
+        list[str] | None,
         Query(
-            title="Instructor of class",
+            title="Instructor(s) of class",
+            description='Can have multiple instructors'
         )                
     ] = None,
     studios: Annotated[
@@ -88,7 +102,7 @@ async def get_all_classes(
 ):
     dance_class_data = await danceclasses.get_all_dance_classes(
         title,
-        instructor,
+        instructors,
         studios,
         style,
         date,
