@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from typing import Annotated
-from scrapers import ilovedance, modega
+from scrapers import ilovedance, modega, dnceclub
 from models.models import DanceClass
 from data import danceclasses
 from datetime import datetime
@@ -120,13 +120,16 @@ async def scrape_all_classes() -> list[DanceClass]:
     loop = asyncio.get_event_loop()
     ilovedance_task = loop.run_in_executor(None, ilovedance.get_ilovedance_classes)
     modega_task = loop.run_in_executor(None, modega.get_modega_classes)
-    
-    ilovedance_results, modega_results = await asyncio.gather(
+    dnceclub_task = loop.run_in_executor(None, dnceclub.get_dnceclub_classes)
+
+    ilovedance_results, modega_results, dnceclub_results = await asyncio.gather(
         ilovedance_task,
-        modega_task
+        modega_task,
+        dnceclub_task
     )
     dance_class_data = []
     dance_class_data.extend(ilovedance_results)
     dance_class_data.extend(modega_results)
+    dance_class_data.extend(dnceclub_results)
     await danceclasses.delete_all_dance_classes()
     return await danceclasses.create_dance_classes(dance_class_data)
