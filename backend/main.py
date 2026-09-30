@@ -1,11 +1,10 @@
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from typing import Annotated
-from scrapers import ilovedance, modega, dnceclub
+from scrapers import scrape_all
 from models.models import DanceClass
 from data import danceclasses
 from datetime import datetime
-import asyncio
 
 app = FastAPI()
 
@@ -40,7 +39,7 @@ async def get_all_classes(
         list[str] | None,
         Query(
             title="Name of studio(s)",
-            description='Can have multiple: modega, ilovedance, ilovedance manhattan, ilovedance queens, ilovedance new jersey'
+            description='Can have multiple, matches on part of the studio name: modega, ilovedance, ilovedance manhattan, peridance, ripley-grier'
         )                
     ] = None,
     style: Annotated[
@@ -117,19 +116,4 @@ async def get_all_classes(
 
 @app.get('/scrape')
 async def scrape_all_classes() -> list[DanceClass]:
-    loop = asyncio.get_event_loop()
-    ilovedance_task = loop.run_in_executor(None, ilovedance.get_ilovedance_classes)
-    modega_task = loop.run_in_executor(None, modega.get_modega_classes)
-    dnceclub_task = loop.run_in_executor(None, dnceclub.get_dnceclub_classes)
-
-    ilovedance_results, modega_results, dnceclub_results = await asyncio.gather(
-        ilovedance_task,
-        modega_task,
-        dnceclub_task
-    )
-    dance_class_data = []
-    dance_class_data.extend(ilovedance_results)
-    dance_class_data.extend(modega_results)
-    dance_class_data.extend(dnceclub_results)
-    await danceclasses.delete_all_dance_classes()
-    return await danceclasses.create_dance_classes(dance_class_data)
+    return await scrape_all.main()
