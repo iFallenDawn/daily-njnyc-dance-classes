@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM selenium/standalone-all-browsers:nightly
+FROM python:3.13-slim
 
 WORKDIR /app
 

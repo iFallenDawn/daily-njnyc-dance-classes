@@ -1,9 +1,15 @@
 from models.models import DanceClass
 from supabasedb.supabase import db
 from datetime import datetime
+from postgrest import CountMethod
 
 # table is called danceclasses
 supabase = db()
+
+def ilike_filter(column: str, value: str) -> str:
+    # values inside or_() have to be double quoted, otherwise names with commas/parentheses break the filter
+    escaped_value = value.replace('\\', '\\\\').replace('"', '\\"')
+    return f'{column}.ilike."%{escaped_value}%"'
 
 async def get_all_dance_classes(
     title: str | None, 
@@ -24,7 +30,7 @@ async def get_all_dance_classes(
     if instructors:
         queried_instructors = []
         for instructor in instructors:
-            queried_instructors.append(f'instructor.ilike.%{instructor}%')
+            queried_instructors.append(ilike_filter('instructor', instructor))
         if queried_instructors:
             query = query.or_(','.join(queried_instructors))
     if studios:
@@ -32,9 +38,9 @@ async def get_all_dance_classes(
         for studio in studios:
             studio_name = studio.lower()
             if studio_name == 'ilovedance':
-                queried_studios.append(f'studio.ilike.%ilovedance%')
+                queried_studios.append(ilike_filter('studio', 'ilovedance'))
             else:
-                queried_studios.append(f'studio.ilike.%{studio_name}%')
+                queried_studios.append(ilike_filter('studio', studio_name))
         if queried_studios:
             query = query.or_(','.join(queried_studios))
     if style:
@@ -51,13 +57,13 @@ async def get_all_dance_classes(
         query = query.eq('cancelled', cancelled)
     
     # Get total count first
-    count_query = supabase.table('danceclasses').select('*', count='exact')
+    count_query = supabase.table('danceclasses').select('*', count=CountMethod.exact)
     if title:
         count_query = count_query.ilike('title', f'%{title}%')
     if instructors:
         queried_instructors = []
         for instructor in instructors:
-            queried_instructors.append(f'instructor.ilike.%{instructor}%')
+            queried_instructors.append(ilike_filter('instructor', instructor))
         if queried_instructors:
             count_query = count_query.or_(','.join(queried_instructors))
     if studios:
@@ -65,9 +71,9 @@ async def get_all_dance_classes(
         for studio in studios:
             studio_name = studio.lower()
             if studio_name == 'ilovedance':
-                queried_studios.append(f'studio.ilike.%ilovedance%')
+                queried_studios.append(ilike_filter('studio', 'ilovedance'))
             else:
-                queried_studios.append(f'studio.ilike.%{studio_name}%')
+                queried_studios.append(ilike_filter('studio', studio_name))
         if queried_studios:
             count_query = count_query.or_(','.join(queried_studios))
     if style:

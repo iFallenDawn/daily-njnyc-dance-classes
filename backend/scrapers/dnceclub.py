@@ -4,7 +4,7 @@ import requests
 from models.models import DanceClass
 
 '''
-dnce.club has a public json api that the site uses for its /classes page, so no selenium needed
+dnce.club has a public json api that the site uses for its /classes page
 GET https://api.dnce.club/classes/discover?limit=100&offset=0&sort=date_asc&from_date=2025-12-01
 {
     "classes": [
