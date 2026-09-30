@@ -63,8 +63,13 @@ export async function get_all_classes(
   }
 }
 
-// Fetch all unique instructors (for filter dropdown)
-export async function get_all_instructors(): Promise<string[]> {
+export interface FilterOptions {
+  instructors: string[];
+  studios: string[];
+}
+
+// Fetch all unique instructors and studios (for filter dropdowns)
+export async function get_filter_options(): Promise<FilterOptions> {
   try {
     const backendUrl =
       import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
@@ -78,13 +83,21 @@ export async function get_all_instructors(): Promise<string[]> {
 
     const firstResult: GetAllClassesResponse = await firstResponse.json();
     const allInstructors = new Set<string>();
+    const allStudios = new Set<string>();
 
-    // Add instructors from first page
-    firstResult.data.forEach((danceClass) => {
-      if (danceClass.instructor) {
-        allInstructors.add(danceClass.instructor);
-      }
-    });
+    const addFilterOptions = (danceClasses: DanceClass[]) => {
+      danceClasses.forEach((danceClass) => {
+        if (danceClass.instructor) {
+          allInstructors.add(danceClass.instructor);
+        }
+        if (danceClass.studio) {
+          allStudios.add(danceClass.studio);
+        }
+      });
+    };
+
+    // Add instructors and studios from first page
+    addFilterOptions(firstResult.data);
 
     // Use metadata to determine how many more pages to fetch
     const { total_pages } = firstResult;
@@ -104,19 +117,16 @@ export async function get_all_instructors(): Promise<string[]> {
         pagePromises
       );
 
-      // Add instructors from all remaining pages
-      remainingResults.forEach((result) => {
-        result.data.forEach((danceClass) => {
-          if (danceClass.instructor) {
-            allInstructors.add(danceClass.instructor);
-          }
-        });
-      });
+      // Add instructors and studios from all remaining pages
+      remainingResults.forEach((result) => addFilterOptions(result.data));
     }
 
-    return Array.from(allInstructors).sort();
+    return {
+      instructors: Array.from(allInstructors).sort(),
+      studios: Array.from(allStudios).sort(),
+    };
   } catch (error) {
-    console.error("Failed to fetch instructors:", error);
-    return [];
+    console.error("Failed to fetch filter options:", error);
+    return { instructors: [], studios: [] };
   }
 }

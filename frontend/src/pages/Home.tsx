@@ -10,7 +10,7 @@ import { DataTable } from "../components/class-table/data-table";
 // api
 import {
   get_all_classes,
-  get_all_instructors,
+  get_filter_options,
   type DanceClass,
 } from "@/api/index";
 
@@ -36,12 +36,7 @@ export default function Home() {
   // Filter state
   const [filters, setFilters] = useState<FilterState>({
     title: "",
-    studios: new Set<string>([
-      "Modega",
-      "ILoveDance Manhattan",
-      "ILoveDance Queens",
-      "ILoveDance New Jersey",
-    ]),
+    studios: new Set<string>(),
     instructors: new Set<string>(),
     startDate: undefined,
     endDate: undefined,
@@ -49,36 +44,27 @@ export default function Home() {
     endTime: undefined,
   });
 
-  // Known studios list - hardcoded since these are the only studios we scrape
-  const availableStudios = useMemo(
-    () => [
-      "Modega",
-      "ILoveDance Manhattan",
-      "ILoveDance Queens",
-      "ILoveDance New Jersey",
-    ],
-    []
-  );
-
-  // Available instructors list - fetched once on mount
+  // Available studios and instructors lists - fetched once on mount
+  const [availableStudios, setAvailableStudios] = useState<string[]>([]);
   const [availableInstructors, setAvailableInstructors] = useState<string[]>(
     []
   );
 
-  // Fetch all instructors on mount
+  // Fetch all studios and instructors on mount
   useEffect(() => {
-    const fetchInstructors = async () => {
-      const instructors = await get_all_instructors();
+    const fetchFilterOptions = async () => {
+      const { instructors, studios } = await get_filter_options();
       setAvailableInstructors(instructors);
-      // Auto-select all instructors on first load
-      if (instructors.length > 0) {
-        setFilters((prev) => ({
-          ...prev,
-          instructors: new Set(instructors),
-        }));
-      }
+      setAvailableStudios(studios);
+      // Auto-select all studios and instructors on first load
+      setFilters((prev) => ({
+        ...prev,
+        instructors:
+          instructors.length > 0 ? new Set(instructors) : prev.instructors,
+        studios: studios.length > 0 ? new Set(studios) : prev.studios,
+      }));
     };
-    fetchInstructors();
+    fetchFilterOptions();
   }, []);
 
   useEffect(() => {
