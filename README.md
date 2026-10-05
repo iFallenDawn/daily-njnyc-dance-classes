@@ -4,6 +4,17 @@ Little tool I made for fun that scrapes nearby studios for their dance class sch
 
 Does not display whether or not a class is fully cancelled, mainly used to show all classes in one place! Find the teacher's/studio's instagram for more info!
 
+## Studios Currently Supported
+
+ILoveDance - Manhattan, Queens, and Fort Lee
+Modega
+Phresh
+Peridance
+PJM
+PMT
+XSpace
+Any class hosted on dnce.club
+
 ## General Notes
 
 data structure? some form of fuzzy matching for difficulty
