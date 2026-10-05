@@ -49,6 +49,7 @@ export default function Home() {
   const [availableInstructors, setAvailableInstructors] = useState<string[]>(
     []
   );
+  const [filterOptionsLoaded, setFilterOptionsLoaded] = useState(false);
 
   // Fetch all studios and instructors on mount
   useEffect(() => {
@@ -63,6 +64,7 @@ export default function Home() {
           instructors.length > 0 ? new Set(instructors) : prev.instructors,
         studios: studios.length > 0 ? new Set(studios) : prev.studios,
       }));
+      setFilterOptionsLoaded(true);
     };
     fetchFilterOptions();
   }, []);
@@ -71,6 +73,11 @@ export default function Home() {
     let isMounted = true;
 
     const fetchClasses = async () => {
+      // Studios and instructors start empty until their options load, keep showing loading until then
+      if (!filterOptionsLoaded) {
+        return;
+      }
+
       try {
         setLoading(true);
         setError(null);
@@ -137,7 +144,7 @@ export default function Home() {
     return () => {
       isMounted = false;
     };
-  }, [currentPage, filters]);
+  }, [currentPage, filters, filterOptionsLoaded]);
 
   // Reset to page 1 when filters change
   useEffect(() => {
@@ -195,7 +202,7 @@ export default function Home() {
     <div className="flex flex-col h-screen w-6xl mx-auto py-8">
       {/* <ModeToggle /> */}
       <div className="flex flex-col mb-4">
-        <div className="text-2xl font-semibold">Dance Class Schedule</div>
+        <div className="text-2xl font-semibold">Daily NJ/NYC Dance Class Schedule</div>
         <div className="text-muted-foreground">
           Browse and filter dance classes
         </div>

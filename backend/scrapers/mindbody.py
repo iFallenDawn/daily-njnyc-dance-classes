@@ -212,7 +212,9 @@ def scrape_mindbody_v2_widget(widget_id: str, studio: str) -> list[DanceClass]:
                     continue
                 instructors = []
                 for staff in resolve_reference(rows, dance_class.get('staff')) or []:
-                    staff = resolve_reference(rows, staff) or {}
+                    staff = resolve_reference(rows, staff)
+                    if not isinstance(staff, dict):
+                        continue
                     name = (staff.get('displayLabel') or '').strip()
                     if name:
                         instructors.append(name)

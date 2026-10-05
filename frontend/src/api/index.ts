@@ -1,3 +1,7 @@
+const API_URL = `${import.meta.env.VITE_BACKEND_URL ??
+  (import.meta.env.DEV ? "http://localhost:8000" : "")
+  }/api`;
+
 export interface GetAllClassesRequest {
   title?: string | null;
   instructors?: string[] | null;
@@ -48,9 +52,7 @@ export async function get_all_classes(
   });
 
   try {
-    const backendUrl =
-      import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
-    const response = await fetch(`${backendUrl}/?${params.toString()}`);
+    const response = await fetch(`${API_URL}/classes?${params.toString()}`);
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -71,11 +73,8 @@ export interface FilterOptions {
 // Fetch all unique instructors and studios (for filter dropdowns)
 export async function get_filter_options(): Promise<FilterOptions> {
   try {
-    const backendUrl =
-      import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
-
     // Fetch first page to get metadata (total_pages, total_count)
-    const firstResponse = await fetch(`${backendUrl}/?page=1&limit=50`);
+    const firstResponse = await fetch(`${API_URL}/classes?page=1&limit=50`);
 
     if (!firstResponse.ok) {
       throw new Error(`HTTP error! status: ${firstResponse.status}`);
@@ -107,7 +106,7 @@ export async function get_filter_options(): Promise<FilterOptions> {
       const pagePromises = [];
       for (let page = 2; page <= total_pages; page++) {
         pagePromises.push(
-          fetch(`${backendUrl}/?page=${page}&limit=50`).then((res) =>
+          fetch(`${API_URL}/classes?page=${page}&limit=50`).then((res) =>
             res.json()
           )
         );

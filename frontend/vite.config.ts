@@ -15,4 +15,7 @@ export default defineConfig({
     host: '0.0.0.0',
     port: 3000,
   },
+  build: {
+    outDir: '../backend/dist', // Replace with your desired folder
+  },
 });

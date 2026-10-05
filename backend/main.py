@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from typing import Annotated
 from scrapers import scrape_all
@@ -6,6 +6,7 @@ from models.models import DanceClass
 from data import danceclasses
 from datetime import datetime
 
+api_router = APIRouter(prefix="/api")
 app = FastAPI()
 
 origins = [
@@ -20,7 +21,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/")
+app.frontend("/", directory="dist")
+
+@api_router.get("/classes")
 async def get_all_classes(
     title: Annotated[
         str | None,
@@ -114,6 +117,8 @@ async def get_all_classes(
     )
     return dance_class_data
 
-@app.get('/scrape')
+@api_router.get('/scrape')
 async def scrape_all_classes() -> list[DanceClass]:
     return await scrape_all.main()
+
+app.include_router(api_router)
