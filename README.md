@@ -36,6 +36,27 @@ etc
 
 ## how to run
 
+in `docker/env` create `user.env`
+```
+
+# User Info
+_UID=1000
+_ADJUSTED_UID=1000
+USER=NAMEHERE
+
+# Docker Info
+COMPOSE_PROJECT_NAME=
+
+# API Keys
+SUPABASE_URL=[FILLTHISOUT]
+SUPABASE_KEY=[FILLTHISOUT]
+
+# Service Ports
+FRONTEND_PORT=3000
+BACKEND_PORT=8000
+
+```
+
 be in root, have docker installed
 
 ```bash
