@@ -6,14 +6,14 @@ Does not display whether or not a class is fully cancelled, mainly used to show 
 
 ## Studios Currently Supported
 
-ILoveDance - Manhattan, Queens, and Fort Lee
-Modega
-Phresh
-Peridance
-PJM
-PMT
-XSpace
-Any class hosted on dnce.club
+- ILoveDance - Manhattan, Queens, and Fort Lee
+- Modega
+- Phresh
+- Peridance
+- PJM
+- PMT
+- XSpace
+- Any class hosted on dnce.club
 
 ## General Notes
 
