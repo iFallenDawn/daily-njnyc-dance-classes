@@ -1,6 +1,8 @@
 # Daily NJ/NYC Dance Classes
 
-Little tool I made for fun that scrapes nearby studios for their dance class schedules daily, similar to how community artistry was ran.
+Little tool I made for fun that scrapes nearby studios for their dance class schedules daily, similar to how community artistry was ran. Refreshes every hour (or whenever the github actions likes to run).
+
+Does not display whether or not a class is fully cancelled, mainly used to show all classes in one place! Find the teacher's/studio's instagram for more info!
 
 ## General Notes
 
