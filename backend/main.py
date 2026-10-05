@@ -117,8 +117,9 @@ async def get_all_classes(
     )
     return dance_class_data
 
-@api_router.get('/scrape')
-async def scrape_all_classes() -> list[DanceClass]:
-    return await scrape_all.main()
+
+# @api_router.get('/scrape')
+# async def scrape_all_classes() -> list[DanceClass]:
+#     return await scrape_all.main()
 
 app.include_router(api_router)
