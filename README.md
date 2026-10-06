@@ -104,13 +104,7 @@ BACKEND_PORT=8000
 
 ```
 
-the `danceclasses` table in Supabase also needs these two columns for the time of day filter, run once in the SQL editor
-
-```sql
-alter table danceclasses
-  add column start_time_of_day time generated always as (start_time::time) stored,
-  add column end_time_of_day time generated always as (end_time::time) stored;
-```
+for a new Supabase project, run `backend/migrations/001_create_danceclasses.sql` once in the SQL editor to create the table
 
 be in root, have docker installed
 
