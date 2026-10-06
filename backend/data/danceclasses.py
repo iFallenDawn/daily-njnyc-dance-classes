@@ -1,6 +1,6 @@
 from models.models import DanceClass
 from supabasedb.supabase import db
-from datetime import datetime
+from datetime import datetime, time
 from postgrest import CountMethod
 
 # table is called danceclasses
@@ -19,6 +19,8 @@ async def get_all_dance_classes(
     date: datetime | None,
     start_time: datetime | None,
     end_time: datetime | None,
+    start_time_of_day: time | None,
+    end_time_of_day: time | None,
     difficulty: str | None,
     cancelled: bool | None,
     page: int,
@@ -51,6 +53,11 @@ async def get_all_dance_classes(
         query = query.gte('start_time', start_time)
     if end_time:
         query = query.lte('end_time', end_time)
+    # class overlaps the time of day window
+    if start_time_of_day:
+        query = query.gte('end_time_of_day', start_time_of_day.isoformat())
+    if end_time_of_day:
+        query = query.lte('start_time_of_day', end_time_of_day.isoformat())
     if difficulty:
         query = query.ilike('difficulty', f'%{difficulty}%')
     if cancelled:
@@ -84,6 +91,10 @@ async def get_all_dance_classes(
         count_query = count_query.gte('start_time', start_time)
     if end_time:
         count_query = count_query.lte('end_time', end_time)
+    if start_time_of_day:
+        count_query = count_query.gte('end_time_of_day', start_time_of_day.isoformat())
+    if end_time_of_day:
+        count_query = count_query.lte('start_time_of_day', end_time_of_day.isoformat())
     if difficulty:
         count_query = count_query.ilike('difficulty', f'%{difficulty}%')
     if cancelled:

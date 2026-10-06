@@ -16,6 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import type { DanceClass } from "@/api/index";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -49,7 +50,34 @@ export function DataTable<TData, TValue>({
   }
 
   return (
-    <div className="overflow-hidden rounded-md border">
+    <>
+      {/* phones: one card per class */}
+      <div className="flex flex-col gap-2 md:hidden">
+        {data.length ? (
+          (data as DanceClass[]).map((danceClass, index) => (
+            <div key={index} className="rounded-md border bg-background p-4">
+              <div className="font-medium">{danceClass.title}</div>
+              <div className="text-sm text-muted-foreground">
+                {danceClass.studio} · {danceClass.instructor}
+              </div>
+              <div className="mt-1 text-sm">
+                {danceClass.date}, {danceClass.start_time} – {danceClass.end_time}
+              </div>
+              {danceClass.difficulty && (
+                <div className="text-sm text-muted-foreground">
+                  {danceClass.difficulty}
+                </div>
+              )}
+            </div>
+          ))
+        ) : (
+          <div className="rounded-md border bg-background p-6 text-center">
+            No results.
+          </div>
+        )}
+      </div>
+      {/* desktop: table */}
+      <div className="hidden overflow-hidden rounded-md border md:block">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -93,6 +121,7 @@ export function DataTable<TData, TValue>({
           )}
         </TableBody>
       </Table>
-    </div>
+      </div>
+    </>
   );
 }

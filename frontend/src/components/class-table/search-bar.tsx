@@ -77,7 +77,7 @@ export default function SearchBar({
         <Field className="w-full md:w-1/2">
           <Input placeholder="Search class names..." {...register("title")} />
         </Field>
-        <div className="flex flex-col gap-2 w-full md:w-1/2 md:flex-row">
+        <div className="grid grid-cols-2 gap-2 w-full md:flex md:w-1/2">
           <Field className="w-full md:w-1/4">
             <StudioFilter
               studios={studios}

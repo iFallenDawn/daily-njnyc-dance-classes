@@ -60,7 +60,7 @@ export function StudioFilter({
             )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-80 p-0" align="start">
+      <PopoverContent className="w-[calc(100vw-2rem)] p-0 sm:w-80" align="start">
         <div className="p-4 space-y-4">
           <div className="flex items-center justify-between">
             <h4 className="font-semibold text-sm">Filter by Studio</h4>

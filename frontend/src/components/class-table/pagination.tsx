@@ -57,7 +57,7 @@ export function Pagination({
   };
 
   return (
-    <div className="flex items-center justify-center gap-4 py-4">
+    <div className="flex flex-wrap items-center justify-center gap-4 py-4">
       <div className="flex items-center gap-1">
         <Button
           variant="outline"
@@ -107,7 +107,7 @@ export function Pagination({
       </div>
 
       <form onSubmit={handlePageSubmit} className="flex items-center gap-2">
-        <span className="text-sm text-muted-foreground">Go to:</span>
+        <span className="hidden text-sm text-muted-foreground sm:inline">Go to:</span>
         <Input
           type="number"
           min={1}

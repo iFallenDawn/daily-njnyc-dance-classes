@@ -4,7 +4,7 @@ from typing import Annotated
 from scrapers import scrape_all
 from models.models import DanceClass
 from data import danceclasses
-from datetime import datetime
+from datetime import datetime, time
 
 api_router = APIRouter(prefix="/api")
 app = FastAPI()
@@ -71,6 +71,18 @@ async def get_all_classes(
             title="End time of class"
         )                
     ] = None,
+    start_time_of_day: Annotated[
+        time | None,
+        Query(
+            title="Earliest time of day, e.g. 18:00"
+        )
+    ] = None,
+    end_time_of_day: Annotated[
+        time | None,
+        Query(
+            title="Latest time of day, e.g. 21:00"
+        )
+    ] = None,
     difficulty: Annotated[
         str | None,
         Query(
@@ -110,6 +122,8 @@ async def get_all_classes(
         date,
         start_time,
         end_time,
+        start_time_of_day,
+        end_time_of_day,
         difficulty,
         cancelled,
         page,
