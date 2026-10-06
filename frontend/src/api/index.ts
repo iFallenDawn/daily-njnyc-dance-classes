@@ -10,6 +10,8 @@ export interface GetAllClassesRequest {
   date?: string | null;
   start_time?: string | null;
   end_time?: string | null;
+  start_time_of_day?: string | null;
+  end_time_of_day?: string | null;
   difficulty?: string | null;
   cancelled?: boolean | null;
   page: number;

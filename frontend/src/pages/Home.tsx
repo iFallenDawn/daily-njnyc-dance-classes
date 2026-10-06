@@ -1,7 +1,7 @@
 "use client";
 
 // react
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 
 // data table stuff
 import { columns } from "../components/class-table/columns";
@@ -111,6 +111,8 @@ export default function Home() {
           end_time: filters.endDate
             ? format(filters.endDate, "yyyy-MM-dd'T'23:59:59")
             : null,
+          start_time_of_day: filters.startTime ?? null,
+          end_time_of_day: filters.endTime ?? null,
           difficulty: null,
           cancelled: null,
         });
@@ -151,55 +153,12 @@ export default function Home() {
     setCurrentPage(1);
   }, [filters]);
 
-  // Apply client-side filtering for time range only
-  const filteredData = useMemo(() => {
-    return data.filter((danceClass) => {
-      // Time range filter - check if class time overlaps with selected range
-      if (filters.startTime || filters.endTime) {
-        try {
-          const classStart24 = convertTo24Hour(danceClass.start_time);
-          const classEnd24 = convertTo24Hour(danceClass.end_time);
-
-          // Check if class overlaps with the filter range
-          if (filters.startTime && classEnd24 < filters.startTime) {
-            return false;
-          }
-
-          if (filters.endTime && classStart24 > filters.endTime) {
-            return false;
-          }
-        } catch {
-          return false;
-        }
-      }
-
-      return true;
-    });
-  }, [data, filters]);
-
-  // Helper function to convert 12-hour time to 24-hour format
-  const convertTo24Hour = (time12h: string): string => {
-    const [time, modifier] = time12h.split(" ");
-    let [hours] = time.split(":");
-    const [, minutes] = time.split(":");
-
-    if (hours === "12") {
-      hours = "00";
-    }
-
-    if (modifier === "PM") {
-      hours = String(parseInt(hours, 10) + 12);
-    }
-
-    return `${hours.padStart(2, "0")}:${minutes}`;
-  };
-
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
 
   return (
-    <div className="flex flex-col h-screen w-6xl mx-auto py-8">
+    <div className="flex flex-col min-h-screen w-full max-w-6xl mx-auto px-4 py-6 md:h-screen md:py-8">
       {/* <ModeToggle /> */}
       <div className="flex flex-col mb-4">
         <div className="text-2xl font-semibold">Daily NJ/NYC Dance Class Schedule</div>
@@ -214,8 +173,8 @@ export default function Home() {
         onFiltersChange={setFilters}
       />
       {error && <div className="text-red-500 mb-4">Error: {error}</div>}
-      <div className="flex-1 overflow-auto min-h-0">
-        <DataTable columns={columns} data={filteredData} loading={loading} />
+      <div className="md:flex-1 md:overflow-auto md:min-h-0">
+        <DataTable columns={columns} data={data} loading={loading} />
       </div>
       {totalPages > 0 && (
         <Pagination
