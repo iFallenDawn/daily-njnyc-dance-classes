@@ -4,6 +4,8 @@ Little tool I made for fun that scrapes nearby studios for their dance class sch
 
 Does not display whether or not a class is fully cancelled, mainly used to show all classes in one place! Find the teacher's/studio's instagram for more info!
 
+> **Note:** class data is compiled every hour and may not reflect cancellations. Check the teacher's Instagram and the studio's booking website to confirm a class before you go.
+
 Live at https://daily-njnyc-dance-classes.fastapicloud.dev
 
 ## Features

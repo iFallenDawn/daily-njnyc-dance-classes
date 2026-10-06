@@ -165,6 +165,11 @@ export default function Home() {
         <div className="text-muted-foreground">
           Browse and filter dance classes
         </div>
+        <div className="mt-1 text-sm text-muted-foreground">
+          Classes are updated every hour and may not reflect cancellations.
+          Check the teacher's Instagram and the studio's booking site to
+          confirm before you go.
+        </div>
       </div>
       <SearchBar
         studios={availableStudios}
